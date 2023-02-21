@@ -64,9 +64,3 @@ def detect_similar_monthly_variations(time_series, years):
 
     print(result)
     return result
-
-
-if __name__ == '__main__':
-    time_series_file = CSVTimeSeriesFile(name='duplicate.csv')
-    time_series = time_series_file.get_data()
-    print(time_series)

@@ -48,5 +48,3 @@ class TestExam(unittest.TestCase):
     def test_duplicate_data(self):
         time_series_file = CSVTimeSeriesFile(name='duplicate.csv')
         self.assertRaises(ExamException, time_series_file.get_data)
-
-    def

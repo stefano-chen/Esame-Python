@@ -69,8 +69,13 @@ def detect_similar_monthly_variations(time_series: list[list], years: list[int |
     if len(years) != 2:
         raise ExamException(f'length of years list: {len(years)}')
     # Check if they are two consecutive years
-    if abs(years[0]-years[1]) != 1:
-        raise ExamException(f'{years[0]} and {years[1]} are not consecutive')
+    try:
+        if int(years[0]) < 0 or int(years[1]) < 0:
+            raise ExamException('Negative Year')
+        if abs(int(years[0])-int(years[1])) != 1:
+            raise ExamException(f'{years[0]} and {years[1]} are not consecutive')
+    except ValueError:
+        raise ExamException('Years format Error')
     # Create a set to check if the chosen years are inside my list of data
     dates = {item[0][0:4] for item in time_series}
     # Check if both the years are present in my data

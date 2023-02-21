@@ -22,8 +22,10 @@ class CSVTimeSeriesFile:
                     try:
                         dates = {item[0] for item in data}
                         if row_data[0] in dates:
+                            file.close()
                             raise ExamException('Duplicate Error')
                         if len(data) > 0 and row_data[0] < data[-1][0]:
+                            file.close()
                             raise ExamException('Timestamp Error')
                         number = int(row_data[1])
                         data.append([row_data[0], number if number >= 0 else None])
@@ -34,7 +36,7 @@ class CSVTimeSeriesFile:
         return data
 
 
-def detect_similar_monthly_variations(time_series, years):
+def detect_similar_monthly_variations(time_series: list, years: list) -> list:
     if len(years) != 2:
         raise ExamException(f'length of years list: {len(years)}')
     if abs(years[0]-years[1]) != 1:
@@ -43,7 +45,7 @@ def detect_similar_monthly_variations(time_series, years):
     for year in years:
         if not str(year) in dates:
             raise ExamException(f'Year not Found: {year}')
-    result = []
+    result = [False]*11
     pass1 = [None]*12
     pass2 = [None]*12
     for i in range(1, 13):

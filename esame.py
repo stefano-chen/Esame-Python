@@ -65,6 +65,9 @@ def detect_similar_monthly_variations(time_series: list[list], years: list[int |
     :param years: a list of two consecutive years
     :return: a list of booleans (True or False)
     """
+    for year in years:
+        if not isinstance(year, (int, str)):
+            raise ExamException('Years type Error')
     # Check if years have exactly two elements
     if len(years) != 2:
         raise ExamException(f'length of years list: {len(years)}')
@@ -76,6 +79,11 @@ def detect_similar_monthly_variations(time_series: list[list], years: list[int |
             raise ExamException(f'{years[0]} and {years[1]} are not consecutive')
     except ValueError:
         raise ExamException('Years format Error')
+    if not isinstance(time_series, list):
+        raise ExamException('Time series format error')
+    for item in time_series:
+        if not isinstance(item[0], str) or len(item[0])!=7 or not isinstance(item[1], (int, None)):
+            raise ExamException('Time series data format error')
     # Create a set to check if the chosen years are inside my list of data
     dates = {item[0][0:4] for item in time_series}
     # Check if both the years are present in my data

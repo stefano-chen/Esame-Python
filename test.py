@@ -52,3 +52,7 @@ class TestExam(unittest.TestCase):
     def test_not_Numbers(self):
         time_series_file = CSVTimeSeriesFile(name='notNumber.csv')
         self.assertRaises(ExamException, time_series_file.get_data)
+
+    def test_strange_date_format(self):
+        time_series_file = CSVTimeSeriesFile(name='strangeDate.csv')
+        self.assertRaises(ExamException, time_series_file.get_data)

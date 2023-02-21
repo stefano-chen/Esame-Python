@@ -20,11 +20,13 @@ class CSVTimeSeriesFile:
                 row_data = row.split(',')
                 if row_data[0] != 'date':
                     try:
-                        if row_data[0] in data:
+                        dates = {item[0] for item in data}
+                        if row_data[0] in dates:
                             raise ExamException('Duplicate Error')
                         if len(data) > 0 and row_data[0] < data[-1][0]:
                             raise ExamException('Timestamp Error')
-                        data.append([row_data[0], int(row_data[1])])
+                        number = int(row_data[1])
+                        data.append([row_data[0], number if number >= 0 else None])
                     except ValueError:
                         data.append([row_data[0], None])
                         continue
@@ -41,7 +43,7 @@ def detect_similar_monthly_variations(time_series, years):
     for year in years:
         if not str(year) in dates:
             raise ExamException(f'Year not Found: {year}')
-    result = [False]*11
+    result = []
     pass1 = [None]*12
     pass2 = [None]*12
     for i in range(1, 13):
@@ -63,10 +65,8 @@ def detect_similar_monthly_variations(time_series, years):
     print(result)
     return result
 
-"""
-if __name__ == '__main__':
-    time_series_file = CSVTimeSeriesFile(name='data.csv')
-    time_series = time_series_file.get_data()
-    detect_similar_monthly_variations(time_series, [1949, 1950])
 
-"""
+if __name__ == '__main__':
+    time_series_file = CSVTimeSeriesFile(name='duplicate.csv')
+    time_series = time_series_file.get_data()
+    print(time_series)

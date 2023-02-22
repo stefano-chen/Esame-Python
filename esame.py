@@ -10,15 +10,22 @@ class CSVTimeSeriesFile:
     Class to read and get data from a file.
     The file name is passed in the constructor.
     """
-    # Initialize the class with a file name
-    # It must be a string otherwise the constructor will raise an exception
+
     def __init__(self, name: str):
+        """
+        Initialize the class with a file name.
+        It must be a string otherwise the constructor will raise an exception;
+        :param name: a string containing a file name (*.csv)
+        """
         if not isinstance(name, str):
             raise ExamException('File Name Error')
         self.name = name
 
-    # Method to extract the data from the file
-    def get_data(self) -> list:
+    def get_data(self) -> list[list[str, int | None]]:
+        """
+        Method to extract the data from the file;
+        :return: a list of lists which represents the dataset
+        """
         data = []
         # Try to open the file
         try:
@@ -53,28 +60,32 @@ class CSVTimeSeriesFile:
                         data.append([row_data[0], None])
                         continue
         file.close()
-        # data is a list of lists [[1949-01,100], [1949-02,200], ...]
         return data
 
 
-def detect_similar_monthly_variations(time_series: list[list], years: list[int | str]) -> list:
+def detect_similar_monthly_variations(time_series: list[list[str, int | None]], years: list[int | str]) -> list[bool]:
     """
-    Function to elaborate the data.
+    Function to elaborate the dataset.
     It requires a list of data and a list of two consecutive years;
     :param time_series: a list of data to elaborate
     :param years: a list of two consecutive years
     :return: a list of booleans (True or False)
     """
-    for year in years:
-        if not isinstance(year, (int, str)):
-            raise ExamException('Years type Error')
+    # Check if years is a list
+    if not isinstance(years, list):
+        raise ExamException('Years is not a list')
     # Check if years have exactly two elements
     if len(years) != 2:
         raise ExamException(f'length of years list: {len(years)}')
-    # Check if they are two consecutive years
+    # Check every element of years is an int or a string
+    for year in years:
+        if not isinstance(year, (int, str)):
+            raise ExamException('Years type Error')
     try:
+        # Check if they are negative years
         if int(years[0]) < 0 or int(years[1]) < 0:
             raise ExamException('Negative Year')
+        # Check if they are two consecutive years
         if abs(int(years[0])-int(years[1])) != 1:
             raise ExamException(f'{years[0]} and {years[1]} are not consecutive')
     except ValueError:
@@ -82,7 +93,7 @@ def detect_similar_monthly_variations(time_series: list[list], years: list[int |
     if not isinstance(time_series, list):
         raise ExamException('Time series format error')
     for item in time_series:
-        if len(item)!=2 or not isinstance(item[0], str) or len(item[0])!=7:
+        if len(item) != 2 or not isinstance(item[0], str) or len(item[0]) != 7:
             raise ExamException('Time series date format error')
         if not isinstance(item[1], (int, type(None))):
             raise ExamException('Time series passengers type error')
@@ -100,15 +111,13 @@ def detect_similar_monthly_variations(time_series: list[list], years: list[int |
     pass2 = [None]*12
     # For every month
     for i in range(1, 13):
-        # Create a string with the interested month for the first year
-        month1 = str(years[0])+'-'+str(i).zfill(2)
-        # Create a string with the interested month for the second year
-        month2 = str(years[1])+'-'+str(i).zfill(2)
-        # For every list inside my list of lists
+        # Create a string with the interested month
+        month = str(i).zfill(2)
+        # For every list inside my list of lists I exact the number of passengers per month
         for item in time_series:
-            if item[0] == month1:
+            if item[0][0:4] == str(years[0]) and item[0][5:7] == month:
                 pass1[i-1] = item[1]
-            if item[0] == month2:
+            if item[0][0:4] == str(years[1]) and item[0][5:7] == month:
                 pass2[i-1] = item[1]
     # Calculate the difference between two consecutive month
     # Only if both month have a not None value of passengers
